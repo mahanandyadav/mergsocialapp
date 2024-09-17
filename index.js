@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
-const { MONGODB } = require("./config.js");
+// const { MONGODB } = require("./config.js");
 
 const pubsub = new PubSub();
 
@@ -15,7 +15,7 @@ const server = new ApolloServer({
   context: ({ req }) => ({ req, pubsub }),
 });
 
-const dburl = `mongodb+srv://${twitterclone}:${twitterclone}@cluster0.zxfwd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0_twitter_clone`;
+const dburl = `mongodb+srv://twitterclone:twitterclone@cluster0.zxfwd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0_twitter_clone`;
 mongoose
   .connect(dburl, { useNewUrlParser: true })
   .then(() => {

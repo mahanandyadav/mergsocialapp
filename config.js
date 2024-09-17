@@ -1,6 +1,5 @@
 module.exports = {
-  MONGODB:
-    // use .env file variable
-  //   process.env.MONGODB_URI,
-  // SECRET_KEY: process.env.SECRET_KEY_MDB
+  MONGODB: "mongodb+srv://twitterclone:twitterclone@cluster0.zxfwd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0_twitter_clone",
+  
+  SECRET_KEY:"mnyjwt" 
 };

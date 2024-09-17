@@ -6,11 +6,16 @@ import gql from 'graphql-tag';
 import { AuthContext } from '../context/auth';
 import { useForm } from '../util/hooks';
 
+const defaultValues = {
+  username: '',
+  password: ''
+};
+
 function Login(props) {
   const context = useContext(AuthContext);
   const [errors, setErrors] = useState({});
 
-  const { onChange, onSubmit, values } = useForm(loginUserCallback, {
+  const { onChange, onSubmit, values=defaultValues } = useForm(loginUserCallback, {
     username: '',
     password: ''
   });
@@ -35,6 +40,7 @@ function Login(props) {
     loginUser();
   }
 
+  const errorKeys = Object?.keys(errors)?.length
   return (
     <div className="form-container">
       <Form onSubmit={onSubmit} noValidate className={loading ? 'loading' : ''}>
@@ -45,7 +51,7 @@ function Login(props) {
           name="username"
           type="text"
           value={values.username}
-          error={errors.username ? true : false}
+          error={errors?.username ? true : false}
           onChange={onChange}
         />
         <Form.Input
@@ -54,14 +60,14 @@ function Login(props) {
           name="password"
           type="password"
           value={values.password}
-          error={errors.password ? true : false}
+          error={errors?.password ? true : false}
           onChange={onChange}
         />
         <Button type="submit" primary>
           Login
         </Button>
       </Form>
-      {Object.keys(errors).length > 0 && (
+      {errorKeys > 0 && (
         <div className="ui error message">
           <ul className="list">
             {Object.values(errors).map((value) => (
