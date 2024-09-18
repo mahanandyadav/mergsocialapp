@@ -1,6 +1,8 @@
 const { gql } = require("apollo-server");
+const { GraphQLScalarType, Kind } = require("graphql");
 
 module.exports = gql`
+  scalar ByteBuffer
   type Post {
     id: ID!
     body: String
@@ -33,7 +35,7 @@ module.exports = gql`
   type uploadFile {
     id: ID
     filename: String
-    data: String
+    data: ByteBuffer
   }
   input RegisterInput {
     username: String!
@@ -69,15 +71,4 @@ module.exports = gql`
   }
 `;
 
-// input postInput:{
-//   inputString: String!
-//   file: {
-//     fileName: String!
-//     id: String!
-//     data: String!
-//         }
-//     }
-//   type Query {
-//   getPosts: [Post]
-//   getPost(postId: ID!): Post
-// }
+

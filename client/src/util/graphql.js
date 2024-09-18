@@ -5,6 +5,11 @@ export const FETCH_POSTS_QUERY = gql`
     getPosts {
       id
       body
+      file {
+        id
+        filename 
+        data
+      }
       createdAt
       username
       likeCount

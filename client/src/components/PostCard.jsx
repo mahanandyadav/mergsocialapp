@@ -1,17 +1,29 @@
-import React, { useContext } from 'react';
-import { Button, Card, Icon, Label, Image } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
-import moment from 'moment';
+import React, { useContext } from "react";
+import { Button, Card, Icon, Label, Image } from "semantic-ui-react";
+import { Link } from "react-router-dom";
+import moment from "moment";
 
-import { AuthContext } from '../context/auth';
-import LikeButton from './LikeButton';
-import DeleteButton from './DeleteButton';
-import MyPopup from '../util/MyPopup';
+import { AuthContext } from "../context/auth";
+import LikeButton from "./LikeButton";
+import DeleteButton from "./DeleteButton";
+import MyPopup from "../util/MyPopup";
 
 function PostCard({
-  post: { body, createdAt, id, username, likeCount, commentCount, likes }
+  post: { body, file, createdAt, id, username, likeCount, commentCount, likes },
 }) {
   const { user } = useContext(AuthContext);
+  console.log(typeof file.data, " file.data");
+  // Assuming you have a byte buffer
+  //   const buffer = Buffer.from([file.data]); // Example Buffer
+  // const stringValue = buffer.toString('utf-8');
+  // const byteBuffer = new Uint8Array([file.data]);
+
+  // Convert the byte buffer to a base64 string
+  // const base64String = btoa(String.fromCharCode(...byteBuffer));
+
+  // Create the data URL
+  const dataUrl = "`data:image/jpeg;base64,${base64String}`;";
+  console.log({ dataUrl });
 
   return (
     <Card fluid>
@@ -19,7 +31,8 @@ function PostCard({
         <Image
           floated="right"
           size="mini"
-          src="https://react.semantic-ui.com/images/avatar/large/molly.png"
+          // src="https://react.semantic-ui.com/images/avatar/large/molly.png"
+          src={dataUrl}
         />
         <Card.Header>{username}</Card.Header>
         <Card.Meta as={Link} to={`/posts/${id}`}>
