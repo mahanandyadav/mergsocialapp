@@ -2,6 +2,11 @@ const { model, Schema } = require('mongoose');
 
 const postSchema = new Schema({
   body: String,
+  file:{
+    filename: String,
+    data: Buffer,
+    id: String,
+  },
   username: String,
   createdAt: String,
   comments: [

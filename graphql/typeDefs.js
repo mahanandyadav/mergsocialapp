@@ -1,9 +1,10 @@
-const { gql } = require('apollo-server');
+const { gql } = require("apollo-server");
 
 module.exports = gql`
   type Post {
     id: ID!
-    body: String!
+    body: String
+    file: uploadFile
     createdAt: String!
     username: String!
     comments: [Comment]!
@@ -29,11 +30,26 @@ module.exports = gql`
     username: String!
     createdAt: String!
   }
+  type uploadFile {
+    id: ID
+    filename: String
+    data: String
+  }
   input RegisterInput {
     username: String!
     password: String!
     confirmPassword: String!
     email: String!
+  }
+  input FileInput {
+    id: ID
+    filename: String
+    data: String
+  }
+  input PostInput {
+    body: String
+    inputString: String!
+    file: FileInput
   }
   type Query {
     getPosts: [Post]
@@ -42,7 +58,7 @@ module.exports = gql`
   type Mutation {
     register(registerInput: RegisterInput): User!
     login(username: String!, password: String!): User!
-    createPost(body: String!): Post!
+    createPost(postBody: PostInput): Post!
     deletePost(postId: ID!): String!
     createComment(postId: String!, body: String!): Post!
     deleteComment(postId: ID!, commentId: ID!): Post!
@@ -52,3 +68,16 @@ module.exports = gql`
     newPost: Post!
   }
 `;
+
+// input postInput:{
+//   inputString: String!
+//   file: {
+//     fileName: String!
+//     id: String!
+//     data: String!
+//         }
+//     }
+//   type Query {
+//   getPosts: [Post]
+//   getPost(postId: ID!): Post
+// }
