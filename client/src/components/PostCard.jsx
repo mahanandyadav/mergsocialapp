@@ -12,7 +12,7 @@ function PostCard({
   post: { body, file, createdAt, id, username, likeCount, commentCount, likes },
 }) {
   const { user } = useContext(AuthContext);
-  console.log(typeof file.data, " file.data");
+  // console.log(typeof file.data, " file.data");
   // Assuming you have a byte buffer
   //   const buffer = Buffer.from([file.data]); // Example Buffer
   // const stringValue = buffer.toString('utf-8');
@@ -23,7 +23,7 @@ function PostCard({
 
   // Create the data URL
   const dataUrl = "`data:image/jpeg;base64,${base64String}`;";
-  console.log({ dataUrl });
+  // console.log({ dataUrl });
 
   return (
     <Card fluid>

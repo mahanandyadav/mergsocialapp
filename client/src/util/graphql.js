@@ -26,3 +26,12 @@ export const FETCH_POSTS_QUERY = gql`
     }
   }
 `;
+
+
+export const FETCH_TOTAL_LIKES_QUERY = gql`
+  {
+    getTotalLikes {
+      totalLikes
+    }
+  }
+`;

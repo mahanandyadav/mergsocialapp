@@ -53,10 +53,15 @@ module.exports = gql`
     inputString: String!
     file: FileInput
   }
+  type TotalLikes {
+    totalLikes: Int!
+  }
   type Query {
     getPosts: [Post]
     getPost(postId: ID!): Post
+    getTotalLikes: TotalLikes
   }
+
   type Mutation {
     register(registerInput: RegisterInput): User!
     login(username: String!, password: String!): User!
@@ -68,7 +73,8 @@ module.exports = gql`
   }
   type Subscription {
     newPost: Post!
+    totalLikeListener: TotalLikes!
   }
 `;
 
-
+// newPostListener: Post!

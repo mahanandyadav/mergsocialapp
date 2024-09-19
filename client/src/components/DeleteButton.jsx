@@ -3,8 +3,11 @@ import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import { Button, Confirm, Icon } from 'semantic-ui-react';
 
-import { FETCH_POSTS_QUERY } from '../util/graphql';
+import { FETCH_POSTS_QUERY, FETCH_TOTAL_LIKES_QUERY } from '../util/graphql';
 import MyPopup from '../util/MyPopup';
+
+
+
 
 function DeleteButton({ postId, commentId, callback }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -22,6 +25,21 @@ function DeleteButton({ postId, commentId, callback }) {
         proxy.writeQuery({ query: FETCH_POSTS_QUERY, data });
       }
       if (callback) callback();
+      // update likes count
+      const newTotalLikes = proxy.readQuery({
+        query: FETCH_TOTAL_LIKES_QUERY,
+      });
+      console.log({newTotalLikes})
+
+      proxy.writeQuery({
+        query: FETCH_TOTAL_LIKES_QUERY,
+        data: {
+          getTotalLikes: {
+            totalLikes: newTotalLikes.getTotalLikes.totalLikes,
+          },
+        },
+      });
+
     },
     variables: {
       postId,

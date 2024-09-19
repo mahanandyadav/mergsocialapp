@@ -104,7 +104,7 @@ function PostForm() {
       {error && (
         <div className="ui error message" style={{ marginBottom: 20 }}>
           <ul className="list">
-            <li>{error.graphQLErrors[0].message}</li>
+            <li>{error.graphQLErrors[0]?.message}</li>
           </ul>
         </div>
       )}
@@ -120,6 +120,11 @@ const CREATE_POST_MUTATION = gql`
     createPost(postBody: $postBody) {
       id
       body
+      file {
+        id
+        filename
+        data
+      }
       createdAt
       username
       likes {

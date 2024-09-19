@@ -2,6 +2,7 @@ const { AuthenticationError, UserInputError } = require("apollo-server");
 
 const Post = require("../../models/Post");
 const checkAuth = require("../../util/check-auth");
+const LISTENER_KEY = require("../../util/listener");
 
 module.exports = {
   Query: {
@@ -21,6 +22,27 @@ module.exports = {
         } else {
           throw new Error("Post not found");
         }
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+    async getTotalLikes() {
+      try {
+        const totalLikes = await Post.aggregate([
+          {
+            $project: {
+              likes: { $size: "$likes" },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalLikes: { $sum: "$likes" },
+            },
+          },
+        ]);
+        // console.log(totalLikes, "totalLikes");
+        return totalLikes[0];
       } catch (err) {
         throw new Error(err);
       }
@@ -47,7 +69,8 @@ module.exports = {
 
       const post = await newPost.save();
 
-      context.pubsub.publish("NEW_POST", {
+      context.pubsub.publish(LISTENER_KEY.NEW_POST, {
+        // newPostListener: post,
         newPost: post,
       });
 
@@ -85,13 +108,28 @@ module.exports = {
         }
 
         await post.save();
+        // publish to listener total likes
+        context.pubsub.publish(LISTENER_KEY.TOTAL_LIKE, {
+          totalLikeListener: {
+            totalLikes: "1000",
+          },
+        });
         return post;
       } else throw new UserInputError("Post not found");
     },
   },
   Subscription: {
-    newPost: {
-      subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("NEW_POST"),
+      newPost: {
+      subscribe: (_, __, { pubsub }) =>
+        pubsub.asyncIterator(LISTENER_KEY.NEW_POST),
+    },
+    // newPostListener: {
+    //   subscribe: (_, __, { pubsub }) =>
+    //     pubsub.asyncIterator(LISTENER_KEY.NEW_POST),
+    // },
+    totalLikeListener: {
+      subscribe: (_, __, { pubsub }) =>
+        pubsub.asyncIterator(LISTENER_KEY.TOTAL_LIKE),
     },
   },
 };
