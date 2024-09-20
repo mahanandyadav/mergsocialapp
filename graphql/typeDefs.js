@@ -73,8 +73,10 @@ module.exports = gql`
   }
   type Subscription {
     newPost: Post!
-    totalLikeListener: TotalLikes!
   }
 `;
-
+// type Subscription {
+//   newPost: Post!
+//   totalLikeListener: TotalLikes!  // no need for pubsub
+// }
 // newPostListener: Post!

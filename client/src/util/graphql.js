@@ -7,7 +7,7 @@ export const FETCH_POSTS_QUERY = gql`
       body
       file {
         id
-        filename 
+        filename
         data
       }
       createdAt
@@ -26,7 +26,6 @@ export const FETCH_POSTS_QUERY = gql`
     }
   }
 `;
-
 
 export const FETCH_TOTAL_LIKES_QUERY = gql`
   {

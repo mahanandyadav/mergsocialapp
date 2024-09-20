@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
-import gql from 'graphql-tag';
-import { useMutation } from '@apollo/react-hooks';
-import { Button, Confirm, Icon } from 'semantic-ui-react';
+import React, { useState } from "react";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/react-hooks";
+import { Button, Confirm, Icon } from "semantic-ui-react";
 
-import { FETCH_POSTS_QUERY, FETCH_TOTAL_LIKES_QUERY } from '../util/graphql';
-import MyPopup from '../util/MyPopup';
-
-
-
+import { FETCH_POSTS_QUERY, FETCH_TOTAL_LIKES_QUERY } from "../util/graphql";
+import MyPopup from "../util/MyPopup";
 
 function DeleteButton({ postId, commentId, callback }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -15,40 +12,47 @@ function DeleteButton({ postId, commentId, callback }) {
   const mutation = commentId ? DELETE_COMMENT_MUTATION : DELETE_POST_MUTATION;
 
   const [deletePostOrMutation] = useMutation(mutation, {
+    refetchQueries: [{ query: FETCH_TOTAL_LIKES_QUERY }], // Forces a refetch from the server
+    awaitRefetchQueries: true, // Ensures mutation waits until refetch is done
+
     update(proxy) {
       setConfirmOpen(false);
       if (!commentId) {
+        // if we are deleting post update post catch.
         const data = proxy.readQuery({
-          query: FETCH_POSTS_QUERY
+          query: FETCH_POSTS_QUERY,
         });
         data.getPosts = data.getPosts.filter((p) => p.id !== postId);
         proxy.writeQuery({ query: FETCH_POSTS_QUERY, data });
       }
+
+      // // update likes count
+      // const newTotalLikes = proxy.readQuery({
+      //   query: FETCH_TOTAL_LIKES_QUERY,
+      // });
+      // console.log({ newTotalLikes });
+
+      // proxy.writeQuery({
+      //   query: FETCH_TOTAL_LIKES_QUERY,
+      //   data: {
+      //     getTotalLikes: {
+      //       totalLikes: newTotalLikes.getTotalLikes.totalLikes,
+      //       //Store error: the application attempted to write an object with no provided typename but the store already contains an object with typename of TotalLikes for the object of id $ROOT_QUERY.getTotalLikes. The selectionSet that was trying to be written is:
+      //       __typename: newTotalLikes.getTotalLikes.__typename,
+      //     },
+      //   },
+      // });
+
       if (callback) callback();
-      // update likes count
-      const newTotalLikes = proxy.readQuery({
-        query: FETCH_TOTAL_LIKES_QUERY,
-      });
-      console.log({newTotalLikes})
-
-      proxy.writeQuery({
-        query: FETCH_TOTAL_LIKES_QUERY,
-        data: {
-          getTotalLikes: {
-            totalLikes: newTotalLikes.getTotalLikes.totalLikes,
-          },
-        },
-      });
-
     },
     variables: {
       postId,
-      commentId
-    }
+      commentId,
+    },
   });
   return (
     <>
-      <MyPopup content={commentId ? 'Delete comment' : 'Delete post'}>
+      <MyPopup content={commentId ? "Delete comment" : "Delete post"}>
         <Button
           as="div"
           color="red"

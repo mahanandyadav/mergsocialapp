@@ -51,7 +51,7 @@ module.exports = {
   Mutation: {
     // async createPost(_, { body }, context) {
     async createPost(_, { postBody }, context) {
-      console.log(postBody, "postBody");
+      // console.log(postBody, "postBody");
       const inputString = postBody.inputString;
       const file = postBody.file;
       const user = checkAuth(context);
@@ -82,7 +82,13 @@ module.exports = {
       try {
         const post = await Post.findById(postId);
         if (user.username === post.username) {
-          await post.delete();
+          await post.delete(); 
+          // // publish to listener total likes
+          // context.pubsub.publish(LISTENER_KEY.TOTAL_LIKE, {
+          //   totalLikeListener: {
+          //     totalLikes: "1000",
+          //   },
+          // });
           return "Post deleted successfully";
         } else {
           throw new AuthenticationError("Action not allowed");
@@ -108,18 +114,13 @@ module.exports = {
         }
 
         await post.save();
-        // publish to listener total likes
-        context.pubsub.publish(LISTENER_KEY.TOTAL_LIKE, {
-          totalLikeListener: {
-            totalLikes: "1000",
-          },
-        });
+
         return post;
       } else throw new UserInputError("Post not found");
     },
   },
   Subscription: {
-      newPost: {
+    newPost: {
       subscribe: (_, __, { pubsub }) =>
         pubsub.asyncIterator(LISTENER_KEY.NEW_POST),
     },
@@ -127,9 +128,10 @@ module.exports = {
     //   subscribe: (_, __, { pubsub }) =>
     //     pubsub.asyncIterator(LISTENER_KEY.NEW_POST),
     // },
-    totalLikeListener: {
-      subscribe: (_, __, { pubsub }) =>
-        pubsub.asyncIterator(LISTENER_KEY.TOTAL_LIKE),
-    },
+    
   },
 };
+// totalLikeListener: {
+//       subscribe: (_, __, { pubsub }) =>
+//         pubsub.asyncIterator(LISTENER_KEY.TOTAL_LIKE),
+//     },
