@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 
 import { AuthContext } from '../context/auth';
 import { useForm } from '../util/hooks';
+import { LOGIN_USER } from '../util/graphql';
 
 const defaultValues = {
   username: '',
@@ -80,16 +81,5 @@ function Login(props) {
   );
 }
 
-const LOGIN_USER = gql`
-  mutation login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-      id
-      email
-      username
-      createdAt
-      token
-    }
-  }
-`;
 
 export default Login;

@@ -75,7 +75,7 @@ module.exports = gql`
     newPost: Post!
   }
 `;
-// type Subscription {
+// type Subscription { https://youtu.be/n1mdAPFq2Os?si=gcIMsu8-kjsSTMnw&t=6992 (how subscriptions work)
 //   newPost: Post!
 //   totalLikeListener: TotalLikes!  // no need for pubsub
 // }

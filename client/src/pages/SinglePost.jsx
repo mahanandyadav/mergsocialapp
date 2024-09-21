@@ -16,6 +16,7 @@ import { AuthContext } from '../context/auth';
 import LikeButton from '../components/LikeButton';
 import DeleteButton from '../components/DeleteButton';
 import MyPopup from '../util/MyPopup';
+import { FETCH_POST_QUERY, SUBMIT_COMMENT_MUTATION } from '../util/graphql';
 
 function SinglePost(props) {
   const postId = props.match.params.postId;
@@ -148,41 +149,5 @@ function SinglePost(props) {
   return postMarkup;
 }
 
-const SUBMIT_COMMENT_MUTATION = gql`
-  mutation($postId: String!, $body: String!) {
-    createComment(postId: $postId, body: $body) {
-      id
-      comments {
-        id
-        body
-        createdAt
-        username
-      }
-      commentCount
-    }
-  }
-`;
-
-const FETCH_POST_QUERY = gql`
-  query($postId: ID!) {
-    getPost(postId: $postId) {
-      id
-      body
-      createdAt
-      username
-      likeCount
-      likes {
-        username
-      }
-      commentCount
-      comments {
-        id
-        username
-        createdAt
-        body
-      }
-    }
-  }
-`;
 
 export default SinglePost;
