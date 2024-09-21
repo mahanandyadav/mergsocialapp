@@ -2,7 +2,8 @@ const { AuthenticationError, UserInputError } = require("apollo-server");
 
 const Post = require("../../models/Post");
 const checkAuth = require("../../util/check-auth");
-const LISTENER_KEY = require("../../util/listener");
+const SUB_KEY = require("../../util/listener");
+const { calculateTotalLikes } = require("../../util/dbQuery");
 
 module.exports = {
   Query: {
@@ -27,22 +28,10 @@ module.exports = {
       }
     },
     async getTotalLikes() {
+      console.log("getTotalLikes");
       try {
-        const totalLikes = await Post.aggregate([
-          {
-            $project: {
-              likes: { $size: "$likes" },
-            },
-          },
-          {
-            $group: {
-              _id: null,
-              totalLikes: { $sum: "$likes" },
-            },
-          },
-        ]);
-        // console.log(totalLikes, "totalLikes");
-        return totalLikes[0];
+        const totalLike = await calculateTotalLikes();
+        return totalLike;
       } catch (err) {
         throw new Error(err);
       }
@@ -69,9 +58,8 @@ module.exports = {
 
       const post = await newPost.save();
 
-      context.pubsub.publish(LISTENER_KEY.NEW_POST, {
-        // newPostListener: post,
-        newPost: post,
+      context.pubsub.publish(SUB_KEY.NEW_POST, {
+        newPost: post, // subscribe not used in FE
       });
 
       return post;
@@ -82,13 +70,9 @@ module.exports = {
       try {
         const post = await Post.findById(postId);
         if (user.username === post.username) {
-          await post.delete(); 
-          // // publish to listener total likes
-          // context.pubsub.publish(LISTENER_KEY.TOTAL_LIKE, {
-          //   totalLikeListener: {
-          //     totalLikes: "1000",
-          //   },
-          // });
+          await post.delete();
+          // at client side we are invalidating get total likes
+
           return "Post deleted successfully";
         } else {
           throw new AuthenticationError("Action not allowed");
@@ -102,11 +86,16 @@ module.exports = {
 
       const post = await Post.findById(postId);
       if (post) {
+        let initialTotalLike = await calculateTotalLikes();
+        console.log(initialTotalLike, "initialTotalLike");
+
         if (post.likes.find((like) => like.username === username)) {
           // Post already likes, unlike it
+          initialTotalLike = initialTotalLike - 1;
           post.likes = post.likes.filter((like) => like.username !== username);
         } else {
           // Not liked, like post
+          initialTotalLike = initialTotalLike + 1;
           post.likes.push({
             username,
             createdAt: new Date().toISOString(),
@@ -114,6 +103,11 @@ module.exports = {
         }
 
         await post.save();
+        context.pubsub.publish(SUB_KEY.TOTAL_LIKE, {
+          totalLikeListener: {
+            totalLikes: initialTotalLike,
+          },
+        });
 
         return post;
       } else throw new UserInputError("Post not found");
@@ -121,17 +115,11 @@ module.exports = {
   },
   Subscription: {
     newPost: {
-      subscribe: (_, __, { pubsub }) =>
-        pubsub.asyncIterator(LISTENER_KEY.NEW_POST),
+      subscribe: (_, __, { pubsub }) => pubsub.asyncIterator(SUB_KEY.NEW_POST),
     },
-    // newPostListener: {
-    //   subscribe: (_, __, { pubsub }) =>
-    //     pubsub.asyncIterator(LISTENER_KEY.NEW_POST),
-    // },
-    
+    totalLikeListener: {
+      subscribe: (_, __, { pubsub }) =>
+        pubsub.asyncIterator(SUB_KEY.TOTAL_LIKE),
+    },
   },
 };
-// totalLikeListener: {
-//       subscribe: (_, __, { pubsub }) =>
-//         pubsub.asyncIterator(LISTENER_KEY.TOTAL_LIKE),
-//     },

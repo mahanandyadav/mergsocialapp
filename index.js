@@ -12,6 +12,7 @@ const PORT = process.env.port || 5000;
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  tracing: true, // Enable tracing
   context: ({ req }) => ({ req, pubsub }),
 });
 

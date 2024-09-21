@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-  const FETCH_POSTS_QUERY = gql`
+const FETCH_POSTS_QUERY = gql`
   {
     getPosts {
       id
@@ -27,7 +27,7 @@ import gql from "graphql-tag";
   }
 `;
 
-  const FETCH_TOTAL_LIKES_QUERY = gql`
+const FETCH_TOTAL_LIKES_QUERY = gql`
   {
     getTotalLikes {
       totalLikes
@@ -128,10 +128,7 @@ const REGISTER_USER = gql`
     }
   }
 `;
-// mutation createPost($body: String!) {
-//   createPost(body: $body) {
-// mutation createPost($inputString: String!, $file: object!) {
-  const CREATE_POST_MUTATION = gql`
+const CREATE_POST_MUTATION = gql`
   mutation createPost($postBody: PostInput) {
     createPost(postBody: $postBody) {
       id
@@ -159,6 +156,20 @@ const REGISTER_USER = gql`
     }
   }
 `;
+
+const LIKE_POST_MUTATION = gql`
+  mutation likePost($postId: ID!) {
+    likePost(postId: $postId) {
+      id
+      likes {
+        id
+        username
+      }
+      likeCount
+    }
+  }
+`;
+
 export {
   DELETE_POST_MUTATION,
   DELETE_COMMENT_MUTATION,
@@ -167,6 +178,7 @@ export {
   FETCH_POST_QUERY,
   REGISTER_USER,
   FETCH_POSTS_QUERY,
-  FETCH_TOTAL_LIKES_QUERY, 
-  CREATE_POST_MUTATION
-}
+  FETCH_TOTAL_LIKES_QUERY,
+  CREATE_POST_MUTATION,
+  LIKE_POST_MUTATION,
+};
