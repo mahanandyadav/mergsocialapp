@@ -28,10 +28,9 @@ module.exports = {
       }
     },
     async getTotalLikes() {
-      console.log("getTotalLikes");
       try {
-        const totalLike = await calculateTotalLikes();
-        return totalLike;
+        const totalLikeDB = await calculateTotalLikes();
+        return { totalLikes: totalLikeDB };
       } catch (err) {
         throw new Error(err);
       }
@@ -101,13 +100,12 @@ module.exports = {
             createdAt: new Date().toISOString(),
           });
         }
-
-        await post.save();
         context.pubsub.publish(SUB_KEY.TOTAL_LIKE, {
           totalLikeListener: {
             totalLikes: initialTotalLike,
           },
         });
+        await post.save();
 
         return post;
       } else throw new UserInputError("Post not found");

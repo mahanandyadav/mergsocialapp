@@ -16,6 +16,6 @@ async function calculateTotalLikes() {
     },
   ]);
   console.log(totalLikes, "initial total like");
-  return totalLikes[0]?.totalLikes //number
+  return totalLikes[0]?.totalLikes || 100000
 }
 exports.calculateTotalLikes = calculateTotalLikes;
